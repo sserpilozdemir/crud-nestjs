@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  email     String   @unique
+  hash      String
+
+  firstName String?
+  lastName  String?
+
+
+//The line bookmarks Bookmark[] in the provided Prisma schema defines a one-to-many relationship between the User model and the Bookmark model. Specifically, it allows a single user to have multiple associated bookmarks. [1] In this schema, the User model has a field called bookmarks which is an array of Bookmark objects. This means that each user can have zero or more bookmarks associated with their account.
+
+  bookmarks Bookmark[]
+
+  //our model associated with user model via @@map
+  @@map("users")
+}
+
+model Bookmark {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title       String
+  description String?
+  link        String
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  @@map("bookmarks")
+}
